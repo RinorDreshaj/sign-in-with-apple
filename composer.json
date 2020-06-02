@@ -1,10 +1,12 @@
 {
     "name": "rinordreshaj/apple-sign-in",
-    "description": "Integrate apple sign in on your api",
+    "description": "Integrate apple sign in easily",
+    "keywords": ["laravel", "sign in", "apple", "sign in with apple"],
+    "license": "MIT",
     "authors": [
         {
             "name": "Rinor Dreshaj",
-            "email": "rinor@apper.ch"
+            "email": "rinordreshaj93@gmail.com"
         }
     ],
     "require": {
