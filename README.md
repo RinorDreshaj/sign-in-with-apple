@@ -26,6 +26,25 @@ APPLE_SIGN_IN_SERVICE_NAME=your.service.name
 
 ## Usage
 
+```bash
+<?php
+
+namespace App\Http\Controllers\API\Auth;
+
+use Rinordreshaj\AppleSignIn\AppleSignIn;
+
+class AppleSignInController extends Controller
+{
+    public function login()
+    {
+        if(AppleSignIn::verify_signature($token))
+        {
+            // Authentication verified
+        }
+    }
+}
+```
+
 ## License
 
 The Laravel IDE Helper Generator is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
