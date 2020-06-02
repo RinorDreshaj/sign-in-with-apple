@@ -47,4 +47,4 @@ class AppleSignInController extends Controller
 
 ## License
 
-The Laravel IDE Helper Generator is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
+The Laravel Sign in with Apple is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)

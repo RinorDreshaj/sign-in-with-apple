@@ -12,6 +12,52 @@ class AppleSignIn
     private static $n = null;
     private static $e = null;
 
+    public static function parse_user($token)
+    {
+        $claims = explode('.', $token)[1];
+
+        $claims = self::decodeFragment($claims);
+
+        $user = new \stdClass; 
+
+        $user->apple_identity_token = $claims['sub'];
+        $user->email = $claims['email'];
+        $user->register_source = "Apple";
+
+        if(isset($claims['user']))
+        {
+            $usr = json_decode($claims['user']);
+            $user->name = $usr->name->firstName;
+            $user->last_name = $user->name->lastName;
+            $user->username = self::username_generator($usr->name->firstName . " " . $user->name->lastName);
+        }
+
+        return $user;
+    }
+
+    public static function username_generator($class, $name)
+    {
+        $username = strtolower($name);
+
+        $username = preg_replace("/[^a-zA-Z]+/", "", $name);
+
+        for($i = 1; $i <= 10; $i++) 
+        {
+            $user = $class::where('username', $username)->first();
+
+            if ($user == null)
+            {
+                return $username;
+            }
+            else 
+            {
+                $username = $username . rand(1, pow(10, $i));
+            }
+        }
+
+        return null;
+    }
+
     public static function verify_signature($token)
     {
         list($header, $claims, $signature) = explode('.', $token);
