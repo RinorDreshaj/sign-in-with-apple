@@ -1,0 +1,26 @@
+{
+    "name": "rinordreshaj/apple-sign-in",
+    "description": "Integrate apple sign in on your api",
+    "authors": [
+        {
+            "name": "Rinor Dreshaj",
+            "email": "rinor@apper.ch"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "~6.0",
+        "phpseclib/phpseclib": "~2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rinordreshaj\\AppleSignIn\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Rinordreshaj\\AppleSignIn\\AppleSignInServiceProvider"
+            ]
+        }
+    }
+}
