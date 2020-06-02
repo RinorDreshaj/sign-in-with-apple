@@ -1,10 +1,5 @@
 # Laravel Sign in with Apple
 
-[![Latest Version on Packagist][ico-version]][link-packagist]
-[![Software License][ico-license]](LICENSE.md)
-[![Build Status][ico-travis]][link-travis]
-[![Total Downloads][ico-downloads]][link-downloads]
-
 **Integrate sign in with apple easily**
 
 This package provides an easy sign in with apple authentication model based on the apple specification
