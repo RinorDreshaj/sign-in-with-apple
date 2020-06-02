@@ -17,6 +17,13 @@ Require this package with composer using the following command:
 composer require rinordreshaj/apple-sign-in
 ```
 
+provide package name & service name generated from on the itunes connect on the .env file
+
+```bash
+APPLE_SIGN_IN_PACKAGE_NAME=your.package.name
+APPLE_SIGN_IN_SERVICE_NAME=your.service.name
+```
+
 ## Usage
 
 ## License
