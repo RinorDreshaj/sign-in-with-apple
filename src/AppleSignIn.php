@@ -12,8 +12,6 @@ class AppleSignIn
     private static $apple_keys_service = "https://appleid.apple.com/auth/keys";
     private static $n = null;
     private static $e = null;
-    private static $package_name = env('APPLE_SIGN_IN_PACKAGE_NAME', config("apple_sign_in.package_name"));
-    private static $service_name = env('APPLE_SIGN_IN_SERVICE_NAME', config("apple_sign_in.service_name"));
 
     public static function parse_user($token)
     {
@@ -74,7 +72,8 @@ class AppleSignIn
             throw new \Exception("Invalid iss value!");
         }
 
-        if($decoded_claims['aud'] != self::$package_name  && $decoded_claims['aud'] != self::$service_name)
+        if($decoded_claims['aud'] != env('APPLE_SIGN_IN_PACKAGE_NAME', config("apple_sign_in.package_name")) &&
+           $decoded_claims['aud'] != env('APPLE_SIGN_IN_SERVICE_NAME', config("apple_sign_in.service_name")))
         {
             throw new \Exception("Invalid package or service value!");
         }
