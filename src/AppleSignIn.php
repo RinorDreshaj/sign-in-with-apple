@@ -8,9 +8,12 @@ use phpseclib\Math\BigInteger;
 
 class AppleSignIn
 {
+
     private static $apple_keys_service = "https://appleid.apple.com/auth/keys";
     private static $n = null;
     private static $e = null;
+    private static $package_name = env('APPLE_SIGN_IN_PACKAGE_NAME', config("apple_sign_in.package_name"));
+    private static $service_name = env('APPLE_SIGN_IN_SERVICE_NAME', config("apple_sign_in.service_name"));
 
     public static function parse_user($token)
     {
@@ -68,17 +71,17 @@ class AppleSignIn
 
         if($decoded_claims['iss'] !== "https://appleid.apple.com")
         {
-            return false;
+            throw new \Exception("Invalid iss value!");
         }
 
-        if($decoded_claims['aud'] != config("apple_sign_in.package_name") && $decoded_claims['aud'] != config("apple_sign_in.service_name"))
+        if($decoded_claims['aud'] != self::$package_name  && $decoded_claims['aud'] != self::$service_name)
         {
-            return false;
+            throw new \Exception("Invalid package or service value!");
         }
 
         if($decoded_claims['exp'] - time() < 0)
         {
-            return false;
+            throw new \Exception("Token has expired");
         }
 
         self::setKeys($decoded_header['kid']);
@@ -151,4 +154,5 @@ class AppleSignIn
             }
         }
     }
+
 }
