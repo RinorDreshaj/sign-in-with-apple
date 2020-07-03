@@ -149,7 +149,7 @@ class AppleSignIn
             if($key['kid'] == $kid)
             {
                 self::$n = $key['n'];
-                self::$n = $key['e'];
+                self::$e = $key['e'];
             }
         }
     }
