@@ -26,7 +26,7 @@ APPLE_SIGN_IN_SERVICE_NAME=your.service.name
 
 ## Usage
 
-```bash
+```php
 <?php
 
 namespace App\Http\Controllers\API\Auth;
