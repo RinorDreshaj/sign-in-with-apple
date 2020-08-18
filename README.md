@@ -40,19 +40,24 @@ class AppleSignInController extends Controller
         if(AppleSignIn::verify_signature($request->jwt_token))
         {
             // Authentication verified
-            $claims = AppleSignIn::parse_user($request->jwt_token);
+            $claims = AppleSignIn::get_token_claims($request->access_token);
 
             $user = User::where([
-                        'apple_identity_token' => $claims->apple_identity_token
-                    ])->orWhere(["email" => $claims->email])->first();
+                    'apple_identifier' => $claims->sub
+                ])
+                ->orWhere(["email" => $claims->email])
+                ->first();
 
-            if(! $user)
+            if(!$user)
             {
-                 // ADD user on database if it doesn't exists
-                 $user = User::create($claims->only('apple_identity_token', 'email', 'name', 'username', 'register_source'));
-            }
-            
-
+             // ADD user on database if it doesn't exists
+                $user = User::create([
+                    "apple_identifier" => $claims->sub,
+                    "email"            => $claims->email,
+                    "first_name"       => $request->first_name,
+                    "last_name"        => $request->last_name,
+                    "register_source"  => "apple"
+                ]);
             // You can return the authenticated user object 
         }
     }
