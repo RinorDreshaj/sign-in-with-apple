@@ -2,61 +2,28 @@
 
 namespace Rinordreshaj\AppleSignIn;
 
-use GuzzleHttp\Client;
 use phpseclib\Crypt\RSA;
 use phpseclib\Math\BigInteger;
 
 class AppleSignIn
 {
-
     private static $apple_keys_service = "https://appleid.apple.com/auth/keys";
     private static $n = null;
     private static $e = null;
 
-    public static function parse_user($token)
+    public static function get_token_claims($token)
     {
         $claims = explode('.', $token)[1];
 
         $claims = self::decodeFragment($claims);
 
-        $user = new \stdClass; 
+        $claims_collection = collect();
 
-        $user->apple_identity_token = $claims['sub'];
-        $user->email = $claims['email'];
-        $user->register_source = "Apple";
-
-        if(isset($claims['user']))
-        {
-            $usr = json_decode($claims['user']);
-            $user->name = $usr->name->firstName;
-            $user->last_name = $user->name->lastName;
-            $user->username = self::username_generator($usr->name->firstName . " " . $user->name->lastName);
+        foreach($claims as $key => $value) {
+            $claims_collection->{$key} = $value;
         }
 
-        return $user;
-    }
-
-    public static function username_generator($class, $name)
-    {
-        $username = strtolower($name);
-
-        $username = preg_replace("/[^a-zA-Z]+/", "", $name);
-
-        for($i = 1; $i <= 10; $i++) 
-        {
-            $user = $class::where('username', $username)->first();
-
-            if ($user == null)
-            {
-                return $username;
-            }
-            else 
-            {
-                $username = $username . rand(1, pow(10, $i));
-            }
-        }
-
-        return null;
+        return $claims_collection;
     }
 
     public static function verify_signature($token)
@@ -72,16 +39,16 @@ class AppleSignIn
             throw new \Exception("Invalid iss value!");
         }
 
-        if($decoded_claims['aud'] != env('APPLE_SIGN_IN_PACKAGE_NAME', config("apple_sign_in.package_name")) &&
-           $decoded_claims['aud'] != env('APPLE_SIGN_IN_SERVICE_NAME', config("apple_sign_in.service_name")))
-        {
-            throw new \Exception("Invalid package or service value!");
-        }
+        // if($decoded_claims['aud'] != env('APPLE_SIGN_IN_PACKAGE_NAME', config("apple_sign_in.package_name")) &&
+        //    $decoded_claims['aud'] != env('APPLE_SIGN_IN_SERVICE_NAME', config("apple_sign_in.service_name")))
+        // {
+        //     throw new \Exception("Invalid package or service value!");
+        // }
 
-        if($decoded_claims['exp'] - time() < 0)
-        {
-            throw new \Exception("Token has expired");
-        }
+        // if($decoded_claims['exp'] - time() < 0)
+        // {
+        //     throw new \Exception("Token has expired");
+        // }
 
         self::setKeys($decoded_header['kid']);
 
@@ -96,6 +63,7 @@ class AppleSignIn
             'n' => new BigInteger(self::$n, 256),
             'e' => new BigInteger(self::$e, 256),
         ]);
+
         $rsa->setHash('sha256');
 
         $rsa->setSignatureMode(OPENSSL_ALGO_SHA256);
@@ -117,32 +85,11 @@ class AppleSignIn
         return base64_decode($str);
     }
 
-    protected static function call_url($url, $method)
-    {
-        try
-        {
-            $client = new Client();
-
-            $response = $client->request($method ?? 'POST', $url);
-
-            if ($response->getStatusCode() == 200)
-            {
-                return json_decode($response->getBody(), true);
-            }
-            else
-            {
-                throw new \Exception("Apple sign in error: Request to apple server failed");
-            }
-        }
-        catch (\Exception $exception)
-        {
-            throw new \Exception("Apple sign in error: Request to apple server failed");
-        }
-    }
-
     protected static function setKeys($kid)
     {
-        $response = self::call_url(self::$apple_keys_service, 'GET');
+        $response = file_get_contents(self::$apple_keys_service);
+
+        $response = json_decode($response, true);
 
         foreach($response['keys'] as $key)
         {
@@ -153,5 +100,4 @@ class AppleSignIn
             }
         }
     }
-
 }
